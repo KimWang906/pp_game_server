@@ -58,14 +58,3 @@ grpcurl -plaintext -import-path ./proto -proto pp_api.proto \
 grpcurl -plaintext -import-path ./proto -proto pp_api.proto \
 -H 'x-authorization: <access_token>' '[::1]:50051' pp_api.RoomService/List
 ```
-
-eyJhbGciOiJIUzI1NiJ9.eyJleHAiOiIzNjAwIiwiaWF0IjoiMTcxNzQ2OTQ2OSIsInN1YiI6IjIwMjIwMjgifQ._E8GQ6TN56jQzKHSgANNVgjOfrQjMtzNTeIuobavBsU
-
-grpcurl -plaintext -import-path ./proto -proto room.proto \
--H 'x-authorization: eyJhbGciOiJIUzI1NiJ9.eyJleHAiOiIzNjAwIiwiaWF0IjoiMTcxNzQ3MTE4NyIsInN1YiI6IjIwMjIwMjgifQ.tyGsM2r2QBPiKyt2NRK8E4SUm1S9Y9-P-wzmjS7ya5g' -d \
-'{
-    "room_name": "Testing Room!",
-    "max_size": "DOUBLE_PLAYERS",
-    "owner_name": "KimWang906"
-}' \
-'[::1]:50051' room.RoomManager/CreateRoom
