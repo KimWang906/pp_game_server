@@ -113,7 +113,7 @@ fn generate_token(user: DatabaseUser) -> Result<Token, GenerateTokenError> {
 
 pub fn resolve_token(env_key: &str) -> Result<Hmac<Sha256>, CheckTokenError> {
     let app_key: String =
-        env::var(env_key).expect(format!("env {} is not defined", env_key).as_str());
+        env::var(env_key).unwrap_or_else(|_| panic!("env {} is not defined", env_key));
 
     Hmac::new_from_slice(app_key.as_bytes()).map_err(|_| CheckTokenError::VerifyTokenError)
 }

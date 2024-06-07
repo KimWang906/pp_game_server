@@ -5,7 +5,7 @@ import "google/protobuf/empty.proto";
 package room;
 
 service RoomManager {
-    rpc ListRooms(google.protobuf.Empty) returns (stream RoomList);
+    rpc ListRooms(google.protobuf.Empty) returns (stream Room);
     rpc CreateRoom(CreateRoomRequest) returns (google.protobuf.Empty);
     rpc DeleteRoom(DeleteRoomRequest) returns (google.protobuf.Empty);
     rpc WatchRoomInfo(RoomInfoRequest) returns (stream Room);

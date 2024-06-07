@@ -1,12 +1,14 @@
 use std::{
     cell::RefCell,
-    sync::{Arc, Mutex},
+    sync::{Arc, Mutex, RwLock},
 };
 
 use protos::room::{
     room_manager_server::RoomManager, CreateRoomRequest, DeleteRoomRequest, Room, RoomInfoRequest,
     RoomList, RoomStatus, RoomUser, RoomUserList,
 };
+use tokio::sync::mpsc::{self, Receiver, Sender};
+use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
 use crate::{
@@ -16,12 +18,12 @@ use crate::{
 
 pub struct Service<'a> {
     pub max_id: Arc<Mutex<RefCell<i64>>>,
-    pub rooms: &'a Arc<Mutex<RoomList>>,
+    pub rooms: &'a Arc<RwLock<RoomList>>,
     pub database: Arc<Mutex<PgPooledConnection>>,
 }
 
 impl<'a> Service<'a> {
-    pub fn new(rooms: &'a Arc<Mutex<RoomList>>, database: PgPooledConnection) -> Self {
+    pub fn new(rooms: &'a Arc<RwLock<RoomList>>, database: PgPooledConnection) -> Self {
         Self {
             max_id: Arc::new(Mutex::new(RefCell::new(1))),
             database: Arc::new(Mutex::new(database)),
@@ -35,7 +37,7 @@ impl<'a> RoomManager for Service<'a>
 where
     'a: 'static,
 {
-    type ListRoomsStream = tonic::Streaming<RoomList>;
+    type ListRoomsStream = ReceiverStream<Result<Room, Status>>;
     type WatchRoomInfoStream = tonic::Streaming<Room>;
 
     async fn create_room(
@@ -64,7 +66,7 @@ where
         };
 
         let locked_id = self.max_id.lock().unwrap();
-        let mut locked_rooms = self.rooms.lock().unwrap();
+        let mut locked_rooms = self.rooms.write().unwrap();
 
         // Create the room
         locked_rooms.rooms.push(Room {
@@ -105,7 +107,7 @@ where
             return Err(Status::invalid_argument("Room ID cannot be 0"));
         }
 
-        let mut locked_rooms = self.rooms.lock().unwrap();
+        let mut locked_rooms = self.rooms.write().unwrap();
         let room = match locked_rooms.rooms.get(data.id as usize) {
             Some(room) => {
                 // validate the owner of the room
@@ -140,7 +142,22 @@ where
         let mut conn = self.database.lock().unwrap();
         CheckUser::new(&request, &mut conn).check();
 
-        unimplemented!()
+        let locked_rooms = self
+            .rooms
+            .read()
+            .map_err(|e| Status::internal(format!("Error while reading the room list: {:?}", e)))
+            .unwrap()
+            .clone();
+
+        let (tx, rx): (Sender<Result<Room, Status>>, Receiver<Result<Room, Status>>) =
+            mpsc::channel(128);
+        tokio::spawn(async move {
+            for room in locked_rooms.rooms.iter() {
+                tx.send(Ok(room.clone())).await.unwrap();
+            }
+        });
+
+        Ok(Response::new(ReceiverStream::new(rx)))
     }
 
     async fn watch_room_info(

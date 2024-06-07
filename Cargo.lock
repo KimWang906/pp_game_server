@@ -865,6 +865,7 @@ dependencies = [
  "serde",
  "sha2",
  "tokio",
+ "tokio-stream",
  "tonic",
 ]
 

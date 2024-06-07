@@ -88,7 +88,7 @@ pub mod room_manager_client {
             &mut self,
             request: impl tonic::IntoRequest<::pbjson_types::Empty>,
         ) -> std::result::Result<
-            tonic::Response<tonic::codec::Streaming<super::RoomList>>,
+            tonic::Response<tonic::codec::Streaming<super::Room>>,
             tonic::Status,
         > {
             self.inner
@@ -189,7 +189,7 @@ pub mod room_manager_server {
     pub trait RoomManager: Send + Sync + 'static {
         /// Server streaming response type for the ListRooms method.
         type ListRoomsStream: tonic::codegen::tokio_stream::Stream<
-                Item = std::result::Result<super::RoomList, tonic::Status>,
+                Item = std::result::Result<super::Room, tonic::Status>,
             >
             + Send
             + 'static;
@@ -305,7 +305,7 @@ pub mod room_manager_server {
                         T: RoomManager,
                     > tonic::server::ServerStreamingService<::pbjson_types::Empty>
                     for ListRoomsSvc<T> {
-                        type Response = super::RoomList;
+                        type Response = super::Room;
                         type ResponseStream = T::ListRoomsStream;
                         type Future = BoxFuture<
                             tonic::Response<Self::ResponseStream>,
