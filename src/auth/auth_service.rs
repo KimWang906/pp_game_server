@@ -12,13 +12,12 @@ use protos::auth::{auth_server::Auth, LoginRequest, RegisterRequest, Token};
 use sha2::Sha256;
 use tonic::{Request, Response, Status};
 
-use crate::{
-    database::{
-        conn::PgPooledConnection,
-        models::{DatabaseUser, NewDatabaseUser},
-    },
-    token_err::CheckTokenError,
+use crate::database::{
+    conn::PgPooledConnection,
+    models::{DatabaseUser, NewDatabaseUser},
 };
+
+use super::token_err::CheckTokenError;
 
 pub struct Service {
     database: Arc<Mutex<PgPooledConnection>>,
@@ -173,7 +172,7 @@ impl<'a> CheckUser<'a> {
     }
 }
 
-trait ToStudentId {
+pub trait ToStudentId {
     fn to_student_id(&self) -> String;
 }
 

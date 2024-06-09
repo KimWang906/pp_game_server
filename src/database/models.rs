@@ -1,5 +1,6 @@
 use diesel::{
-    ExpressionMethods, Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl, Selectable, SelectableHelper
+    ExpressionMethods, Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl, Selectable,
+    SelectableHelper,
 };
 
 use super::schema::users::{self};
@@ -12,6 +13,7 @@ pub struct DatabaseUser {
     pub username: String,
     pub password: String,
     pub student_id: String,
+    pub entered_room_id: Option<i64>,
 }
 
 #[derive(Insertable)]
@@ -41,6 +43,14 @@ impl DatabaseUser {
             .ok()
     }
 
+    pub fn find_by_student_id(conn: &mut PgConnection, student_id: &str) -> Option<DatabaseUser> {
+        users::dsl::users
+            .select(DatabaseUser::as_select())
+            .filter(users::dsl::student_id.eq(student_id))
+            .first(conn)
+            .ok()
+    }
+
     pub fn student_id_exists(conn: &mut PgConnection, student_id: &str) -> bool {
         use diesel::dsl::exists;
 
@@ -61,10 +71,10 @@ impl DatabaseUser {
     pub fn update_room_id(
         conn: &mut PgConnection,
         student_id: &str,
-        new_room_id: i64,
+        new_room_id: Option<i64>,
     ) -> Result<(), diesel::result::Error> {
         diesel::update(users::dsl::users.filter(users::dsl::student_id.eq(student_id)))
-            .set(users::dsl::entered_room_id.eq(Some(new_room_id)))
+            .set(users::dsl::entered_room_id.eq(new_room_id))
             .execute(conn)
             .map(|_| ())
     }

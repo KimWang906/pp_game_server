@@ -612,7 +612,7 @@ pub mod room_user_manager_client {
         }
         pub async fn join_room(
             &mut self,
-            request: impl tonic::IntoRequest<super::RoomUser>,
+            request: impl tonic::IntoRequest<super::JoinRoomRequest>,
         ) -> std::result::Result<tonic::Response<::pbjson_types::Empty>, tonic::Status> {
             self.inner
                 .ready()
@@ -632,31 +632,9 @@ pub mod room_user_manager_client {
                 .insert(GrpcMethod::new("room.RoomUserManager", "JoinRoom"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn get_users(
-            &mut self,
-            request: impl tonic::IntoRequest<::pbjson_types::Empty>,
-        ) -> std::result::Result<tonic::Response<super::RoomUserList>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/room.RoomUserManager/GetUsers",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("room.RoomUserManager", "GetUsers"));
-            self.inner.unary(req, path, codec).await
-        }
         pub async fn leave_room(
             &mut self,
-            request: impl tonic::IntoRequest<super::RoomUser>,
+            request: impl tonic::IntoRequest<::pbjson_types::Empty>,
         ) -> std::result::Result<tonic::Response<::pbjson_types::Empty>, tonic::Status> {
             self.inner
                 .ready()
@@ -687,15 +665,11 @@ pub mod room_user_manager_server {
     pub trait RoomUserManager: Send + Sync + 'static {
         async fn join_room(
             &self,
-            request: tonic::Request<super::RoomUser>,
+            request: tonic::Request<super::JoinRoomRequest>,
         ) -> std::result::Result<tonic::Response<::pbjson_types::Empty>, tonic::Status>;
-        async fn get_users(
-            &self,
-            request: tonic::Request<::pbjson_types::Empty>,
-        ) -> std::result::Result<tonic::Response<super::RoomUserList>, tonic::Status>;
         async fn leave_room(
             &self,
-            request: tonic::Request<super::RoomUser>,
+            request: tonic::Request<::pbjson_types::Empty>,
         ) -> std::result::Result<tonic::Response<::pbjson_types::Empty>, tonic::Status>;
     }
     #[derive(Debug)]
@@ -780,7 +754,9 @@ pub mod room_user_manager_server {
                 "/room.RoomUserManager/JoinRoom" => {
                     #[allow(non_camel_case_types)]
                     struct JoinRoomSvc<T: RoomUserManager>(pub Arc<T>);
-                    impl<T: RoomUserManager> tonic::server::UnaryService<super::RoomUser>
+                    impl<
+                        T: RoomUserManager,
+                    > tonic::server::UnaryService<super::JoinRoomRequest>
                     for JoinRoomSvc<T> {
                         type Response = ::pbjson_types::Empty;
                         type Future = BoxFuture<
@@ -789,7 +765,7 @@ pub mod room_user_manager_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::RoomUser>,
+                            request: tonic::Request<super::JoinRoomRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
@@ -821,56 +797,12 @@ pub mod room_user_manager_server {
                     };
                     Box::pin(fut)
                 }
-                "/room.RoomUserManager/GetUsers" => {
-                    #[allow(non_camel_case_types)]
-                    struct GetUsersSvc<T: RoomUserManager>(pub Arc<T>);
-                    impl<
-                        T: RoomUserManager,
-                    > tonic::server::UnaryService<::pbjson_types::Empty>
-                    for GetUsersSvc<T> {
-                        type Response = super::RoomUserList;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<::pbjson_types::Empty>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as RoomUserManager>::get_users(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let inner = inner.0;
-                        let method = GetUsersSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
                 "/room.RoomUserManager/LeaveRoom" => {
                     #[allow(non_camel_case_types)]
                     struct LeaveRoomSvc<T: RoomUserManager>(pub Arc<T>);
-                    impl<T: RoomUserManager> tonic::server::UnaryService<super::RoomUser>
+                    impl<
+                        T: RoomUserManager,
+                    > tonic::server::UnaryService<::pbjson_types::Empty>
                     for LeaveRoomSvc<T> {
                         type Response = ::pbjson_types::Empty;
                         type Future = BoxFuture<
@@ -879,7 +811,7 @@ pub mod room_user_manager_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::RoomUser>,
+                            request: tonic::Request<::pbjson_types::Empty>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {

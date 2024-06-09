@@ -28,33 +28,60 @@ grpcurl -plaintext -import-path ./proto -proto auth.proto -d \
 ### Create Room
 
 ```bash
-grpcurl -plaintext -import-path ./proto -proto pp_api.proto \
+grpcurl -plaintext -import-path ./proto -proto room.proto \
 -H 'x-authorization: <access_token>' -d \
 '{
     "room_name": "Testing Room!",
-    "max_size": "TWO_PLAYERS"
-    "owner_name": "KimWang906",
+    "max_size": "DOUBLE_PLAYERS",
+    "owner_name": "KimWang906"
 }' \
-'[::1]:50051' pp_api.RoomService/Create
+'[::1]:50051' room.RoomManager/CreateRoom
 ```
 
 ### Destroy Room
 
 ```bash
-grpcurl -plaintext -import-path ./proto -proto pp_api.proto \
+grpcurl -plaintext -import-path ./proto -proto room.proto \
 -H 'x-authorization: <access_token>' -d \
 '{
-    "room_id": 1,
-    "token": {
-        "access_token": <room_access_token>
-    }
+    "id": 1
 }' \
-'[::1]:50051' pp_api.RoomService/Destroy
+'[::1]:50051' room.RoomManager/DeleteRoom
 ```
 
 ## Room List
 
 ```bash
-grpcurl -plaintext -import-path ./proto -proto pp_api.proto \
--H 'x-authorization: <access_token>' '[::1]:50051' pp_api.RoomService/List
+grpcurl -plaintext -import-path ./proto -proto room.proto \
+-H 'x-authorization: <access_token>' '[::1]:50051' room.RoomManager/ListRooms
+```
+
+## Watching Room
+
+```bash
+grpcurl -plaintext -import-path ./proto -proto room.proto \
+-H 'x-authorization: <access_token>' -d \
+'{
+    "id": 1
+}' \
+'[::1]:50051' room.RoomManager/WatchRoomInfo
+```
+
+## Join Room
+
+```bash
+grpcurl -plaintext -import-path ./proto -proto room.proto \
+-H 'x-authorization: <access_token>' -d \
+'{
+    "id": 1
+}' \
+'[::1]:50051' room.RoomUserManager/JoinRoom
+```
+
+## Leave Room
+
+```bash
+grpcurl -plaintext -import-path ./proto -proto room.proto \
+-H 'x-authorization: <access_token>' -d \
+'{}' '[::1]:50051' room.RoomUserManager/LeaveRoom
 ```

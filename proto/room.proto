@@ -12,9 +12,9 @@ service RoomManager {
 }
 
 service RoomUserManager {
-    rpc JoinRoom(RoomUser) returns (google.protobuf.Empty);
-    rpc GetUsers(google.protobuf.Empty) returns (RoomUserList);
-    rpc LeaveRoom(RoomUser) returns (google.protobuf.Empty);
+    rpc JoinRoom(JoinRoomRequest) returns (google.protobuf.Empty);
+    // rpc GetUsers(google.protobuf.Empty) returns (stream RoomUser);
+    rpc LeaveRoom(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
 message RoomInfoRequest {
@@ -26,13 +26,21 @@ message CreateRoomRequest {
     MaxRoomSize max_size = 2;
     string owner_name = 3;
 }
-
+    
 message DeleteRoomRequest {
     uint64 id = 1;
 }
 
+message JoinRoomRequest {
+    uint64 id = 1;
+}
+        
+// message LeaveRoomRequest {
+//     string student_id = 1;
+// }
+
 enum RoomStatus {
-    OPEN = 0;
+            OPEN = 0;
     CLOSED = 1;
     FULL = 2;
 }

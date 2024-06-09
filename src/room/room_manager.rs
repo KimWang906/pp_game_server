@@ -12,7 +12,7 @@ use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
 use crate::{
-    auth::CheckUser,
+    auth_service::CheckUser,
     database::{conn::PgPooledConnection, models::DatabaseUser},
 };
 
@@ -38,7 +38,7 @@ where
     'a: 'static,
 {
     type ListRoomsStream = ReceiverStream<Result<Room, Status>>;
-    type WatchRoomInfoStream = tonic::Streaming<Room>;
+    type WatchRoomInfoStream = ReceiverStream<Result<Room, Status>>;
 
     async fn create_room(
         &self,
@@ -82,7 +82,7 @@ where
         DatabaseUser::update_room_id(
             &mut conn,
             user_data.student_id.as_str(),
-            *locked_id.borrow(),
+            Some(*locked_id.borrow()),
         )
         .expect("Error while updating the room ID");
 
@@ -107,8 +107,10 @@ where
             return Err(Status::invalid_argument("Room ID cannot be 0"));
         }
 
+        let room_id_of_vec = data.id - 1;
+
         let mut locked_rooms = self.rooms.write().unwrap();
-        let room = match locked_rooms.rooms.get(data.id as usize) {
+        let room = match locked_rooms.rooms.get(room_id_of_vec as usize) {
             Some(room) => {
                 // validate the owner of the room
                 let owner_student_id = room.owner.as_ref().unwrap().student_id.as_str();
@@ -130,7 +132,9 @@ where
         }
 
         // Remove the room
-        locked_rooms.rooms.remove(data.id as usize);
+        locked_rooms.rooms.remove(room_id_of_vec as usize);
+
+        println!("Room {} deleted", data.id);
 
         Ok(Response::new(pbjson_types::Empty {}))
     }
@@ -167,6 +171,29 @@ where
         let mut conn = self.database.lock().unwrap();
         CheckUser::new(&request, &mut conn).check();
 
-        unimplemented!()
+        let data = request.into_inner();
+
+        let locked_rooms = self
+            .rooms
+            .read()
+            .map_err(|e| Status::internal(format!("Error while reading the room list: {:?}", e)))
+            .unwrap()
+            .clone();
+
+        let (tx, rx): (Sender<Result<Room, Status>>, Receiver<Result<Room, Status>>) =
+            mpsc::channel(128);
+        tokio::spawn(async move {
+            let room_id_of_vec = data.id - 1;
+            match locked_rooms.rooms.get(room_id_of_vec as usize) {
+                Some(room) => tx.send(Ok(room.clone())).await.unwrap(),
+
+                None => tx
+                    .send(Err(Status::unknown("Could not get room")))
+                    .await
+                    .unwrap(),
+            }
+        });
+
+        Ok(Response::new(ReceiverStream::new(rx)))
     }
 }
