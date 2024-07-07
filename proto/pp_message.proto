@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.pingpong";
+option java_outer_classname = "PingPongProto";
+
+/* import actions */
+import "actions/add_player.proto";
+import "actions/broadcast_winner.proto";
+import "actions/broadcast_ball.proto";
+import "actions/get_rooms.proto";
+import "actions/host_room.proto";
+import "actions/reconnect.proto";
+import "actions/remove_player.proto";
+import "actions/set_player_ready.proto";
+import "actions/start_next_round.proto";
+import "actions/unsubscribe.proto";
+import "actions/quit_player.proto";
+
+/* import datastreams */
+import "datastreams/game_events.proto";
+import "datastreams/room_events.proto";
+
+/* import models */
+import "models/game_event.proto";
+import "models/game_subscription.proto";
+import "models/room.proto";
+import "models/room_event.proto";
+import "models/room_subscription.proto";
+import "models/max_size.proto";
+import "models/player.proto";
+import "models/settings.proto";
+import "models/paddle_direction.proto";
+
+package pingpong;
+
+service PingPongService {
+    rpc BroadcastBallObject(actions.BroadcastBallRequest) returns (actions.BroadcastBallResponse);
+
+    rpc Reconnect(actions.ReconnectRequest) returns (actions.ReconnectResponse);
+    rpc HostRoom(actions.HostRoomRequest) returns (actions.HostRoomResponse);
+    rpc GetRooms(actions.GetRoomsRequest) returns (actions.GetRoomsResponse);
+
+    rpc AddPlayer(actions.AddPlayerRequest) returns (actions.AddPlayerResponse);
+    rpc RemovePlayer(actions.RemovePlayerRequest) returns (actions.RemovePlayerResponse);
+    rpc SetPlayerReady(actions.SetPlayerReadyRequest) returns (actions.SetPlayerReadyResponse);
+    rpc Unsubscribe(actions.UnsubscribeRequest) returns (actions.UnsubscribeResponse);
+
+
+    rpc BroadcastWinner(actions.BroadcastWinnerRequest) returns (actions.BroadcastWinnerResponse);
+    rpc QuitPlayer(actions.QuitPlayerRequest) returns (actions.QuitPlayerResponse);
+    rpc StartNextRound(actions.StartNextRoundRequest) returns (actions.StartNextRoundResponse);
+}
+
+service PingPongStreamService {
+    rpc GetRoomEventUpdates(models.RoomSubscription) returns (stream datastreams.RoomEventUpdate);
+    rpc GetGameEventUpdates(models.GameSubscription) returns (stream datastreams.GameEventUpdate);
+}

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.actions";
+option java_outer_classname = "HostRoomProto";
+
+import "models/room.proto";
+import "models/max_size.proto";
+
+package actions;
+
+message HostRoomRequest {
+    string room_name = 1;
+    models.MaxSize max_size = 2;
+    string password = 7;
+
+    uint32 player_id = 4; // player id is entered by the host
+    string player_name = 5;
+}
+
+message HostRoomResponse {
+    uint64 room_id = 3;
+}

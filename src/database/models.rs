@@ -10,10 +10,10 @@ use super::schema::users::{self};
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct DatabaseUser {
     pub id: i32,
+    pub player_id: i32,
+    pub student_id: String,
     pub username: String,
     pub password: String,
-    pub student_id: String,
-    pub entered_room_id: Option<i64>,
 }
 
 #[derive(Insertable)]
@@ -59,23 +59,5 @@ impl DatabaseUser {
         ))
         .get_result(conn)
         .unwrap()
-    }
-
-    pub fn cleanup_room_userlist(conn: &mut PgConnection, student_id: &str) {
-        diesel::update(users::dsl::users.filter(users::dsl::student_id.eq(student_id)))
-            .set(users::dsl::entered_room_id.eq(None::<i64>))
-            .execute(conn)
-            .unwrap();
-    }
-
-    pub fn update_room_id(
-        conn: &mut PgConnection,
-        student_id: &str,
-        new_room_id: Option<i64>,
-    ) -> Result<(), diesel::result::Error> {
-        diesel::update(users::dsl::users.filter(users::dsl::student_id.eq(student_id)))
-            .set(users::dsl::entered_room_id.eq(new_room_id))
-            .execute(conn)
-            .map(|_| ())
     }
 }

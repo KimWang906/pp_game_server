@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "io.grpc.services.actions";
+option java_outer_classname = "BroadcastWinnerProto";
+
+import "models/player.proto";
+
+package actions;
+
+message BroadcastWinnerRequest {
+    models.Player player = 1;
+    uint64 room_id = 2;
+}
+
+message BroadcastWinnerResponse {
+    optional bool success = 1;
+}

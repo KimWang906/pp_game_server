@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_package = "io.grpc.services.actions";
+option java_outer_classname = "UnsubscribeProto";
+
+package actions;
+
+message UnsubscribeRequest {
+    string player_student_id = 1;
+    uint64 room_id = 2;
+}
+
+message UnsubscribeResponse {
+    optional bool success = 1;
+}

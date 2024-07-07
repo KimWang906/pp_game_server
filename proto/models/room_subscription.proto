@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.models";
+option java_outer_classname = "RoomSubscriptionProto";
+
+package models;
+
+message RoomSubscription {
+    int32 room_id = 1;
+    uint32 player_id = 2;
+    bool destroy = 3;
+}

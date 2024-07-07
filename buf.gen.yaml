@@ -17,6 +17,7 @@ plugins:
       - compile_well_known_types
       - extern_path=.google.protobuf=::pbjson_types
   - plugin: prost-crate # Makes the gen folder a crate
+    strategy: all
     out: gen
     opt:
       - gen_crate=gen/Cargo.toml

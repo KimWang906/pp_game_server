@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.actions";
+option java_outer_classname = "SetPlayerReadyProto";
+
+import "models/player.proto";
+
+package actions;
+
+message SetPlayerReadyRequest {
+    uint32 player_id = 1;
+    bool is_ready = 2;
+    uint64 room_id = 3;
+}
+
+message SetPlayerReadyResponse {
+    uint32 player_id = 3;
+    bool is_ready = 4;
+}

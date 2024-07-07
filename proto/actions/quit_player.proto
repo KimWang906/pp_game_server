@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.actions";
+option java_outer_classname = "QuitPlayerProto";
+
+import "models/player.proto";
+
+package actions;
+
+message QuitPlayerRequest {
+    models.Player player = 1;
+    uint32 room_id = 2;
+}
+
+message QuitPlayerResponse {
+    optional bool success = 1;
+}

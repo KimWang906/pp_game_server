@@ -862,6 +862,7 @@ dependencies = [
  "prost",
  "protobuf",
  "protos",
+ "rand",
  "serde",
  "sha2",
  "tokio",

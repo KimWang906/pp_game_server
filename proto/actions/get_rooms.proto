@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.actions";
+option java_outer_classname = "GetRoomsProto";
+
+import "models/room.proto";
+
+package actions;
+
+message GetRoomsRequest {}
+
+message GetRoomsResponse {
+    repeated models.Room rooms = 3;
+}

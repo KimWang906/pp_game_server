@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.models";
+option java_outer_classname = "PlayerProto";
+
+import "models/paddle.proto";
+import "models/color.proto";
+
+package models;
+
+message Player {
+    uint32 id = 1;
+    string name = 2;
+    bool ready = 3;
+    uint32 score = 4;
+    models.Color color = 5;
+}

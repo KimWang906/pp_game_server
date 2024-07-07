@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.actions";
+option java_outer_classname = "StartNextRoundProto";
+
+package actions;
+
+message StartNextRoundRequest {
+    uint32 player_id = 1;
+    uint64 room_id = 2;
+}
+
+message StartNextRoundResponse {
+    optional bool success = 1;
+}

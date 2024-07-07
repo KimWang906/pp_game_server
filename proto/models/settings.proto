@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.models";
+option java_outer_classname = "SettingsProto";
+
+package models;
+
+message HostSettings {
+    uint32 max_score = 1;
+    int32 ball_spped = 2;
+    int32 paddle_speed = 3;
+}

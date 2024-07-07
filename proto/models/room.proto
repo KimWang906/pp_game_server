@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.models";
+option java_outer_classname = "RoomProto";
+
+import "models/settings.proto";
+import "models/max_size.proto";
+
+package models;
+
+message Room {
+    int32 id = 1;
+    string name = 2;
+    bool password_exists = 3;
+    models.HostSettings settings = 4;
+    models.MaxSize max_size = 5;
+    uint32 count = 6;
+}

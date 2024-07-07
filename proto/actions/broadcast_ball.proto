@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.actions";
+option java_outer_classname = "BallPositionProto";
+
+package actions;
+
+message BroadcastBallRequest {
+    uint64 room_id = 1;
+}
+
+message BroadcastBallResponse {
+    int32 x = 1;
+    int32 y = 2;
+}

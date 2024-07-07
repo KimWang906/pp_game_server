@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.services.models";
+option java_outer_classname = "RoomEventProto";
+
+import "models/player.proto";
+
+package models;
+
+message RoomEvent {
+    
+    enum EventCode {
+        ROOM_DESTROY = 0;
+        ADD_PLAYER = 1;
+        REMOVE_PLAYER = 2;
+        PLAYER_READY_CHANGED = 3;
+        PLAYER_STATE_CHANGED = 4;
+        GAME_START = 5;
+    }
+
+    EventCode event_code = 1;
+    repeated models.Player players = 2;
+    uint32 max_count = 3;
+}
