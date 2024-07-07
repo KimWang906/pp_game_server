@@ -85,14 +85,3 @@ grpcurl -plaintext -import-path ./proto -proto room.proto \
 -H 'x-authorization: <access_token>' -d \
 '{}' '[::1]:50051' room.RoomUserManager/LeaveRoom
 ```
-
-
-
-grpcurl -plaintext -import-path ./proto -proto room.proto \
--H 'x-authorization: eyJhbGciOiJIUzI1NiJ9.eyJleHAiOiIzNjAwIiwiaWF0IjoiMTcxODA4NzU0MiIsInN1YiI6IjIwMjIwMjgifQ.obsh6jsoGc79wQSamO7n8GygEjzvYTUt5efV3sKazbw' -d \
-'{
-    "room_name": "Testing Room!!!!!",
-    "max_size": "DOUBLE_PLAYERS",
-    "owner_name": "KimWang906"
-}' \
-'[::1]:50051' room.RoomManager/CreateRoom
